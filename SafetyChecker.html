@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>终端模拟 - 按代码参数复刻版</title>
+    <title>Termex模拟器</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
@@ -157,7 +157,7 @@
             fallingTexts.forEach(ft => {
                 const el = document.createElement('div');
                 el.className = 'fall-text-item';
-                el.textContent = '程序版本1.0.2.8';
+                el.textContent = '程序版本1.0.2.9';
                 el.style.transform = `translate(${ft.x}px, ${ft.y}px)`;
                 fallCanvas.appendChild(el);
                 ft.el = el;
