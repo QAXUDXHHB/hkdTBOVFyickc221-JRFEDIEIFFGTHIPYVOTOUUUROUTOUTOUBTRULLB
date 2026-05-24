@@ -1,99 +1,326 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'JetBrains Mono', monospace;
-    user-select: none;
-}
-body {
-    background: #000;
-    overflow: hidden;
-    position: relative;
-}
-#terminal {
-    width: 100vw;
-    height: 100vh;
-    background: #000;
-    color: #e0e0e0;
-    font-size: 14px;
-    line-height: 1.4;
-    padding: 20px;
-    overflow-y: auto;
-    position: relative;
-    white-space: pre;
-    z-index: 3;
-}
-.text-cyan { color: #00ffff; }
-.text-green { color: #00ff00; }
-.text-yellow { color: #ffff00; }
-.text-red { color: #ff0000; }
-.text-purple { color: #ff00ff; }
-.text-white { color: #ffffff; }
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>终端模拟 - 按代码参数复刻版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'JetBrains Mono', monospace;
+            user-select: none;
+        }
+        body {
+            background: #000;
+            overflow: hidden;
+            position: relative;
+        }
+        #terminal {
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            color: #e0e0e0;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+            white-space: pre;
+            z-index: 3;
+        }
+        .text-cyan { color: #00ffff; }
+        .text-green { color: #00ff00; }
+        .text-yellow { color: #ffff00; }
+        .text-red { color: #ff0000; }
+        .text-purple { color: #ff00ff; }
+        .text-white { color: #ffffff; }
+        #imgBox {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            border: 2px solid #555;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: move;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            background: #fff;
+            touch-action: none;
+        }
+        #imgBox img {
+            width: 100%;
+            height: auto;
+            display: block;
+            pointer-events: none;
+            content: url('https://cdn-us.imgs.moe/2026/05/24/f05d77f77317ec038eed7029cd1ccf29.png');
+        }
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #e0e0e0;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        #blackScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            z-index: 20;
+            display: none;
+        }
+        #fallTextCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: 5;
+            pointer-events: none;
+            display: none;
+        }
+        .fall-text-item {
+            position: absolute;
+            color: #ff0000;
+            font-size: 10px;
+            font-weight: bold;
+            line-height: 1;
+            white-space: nowrap;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="terminal">
+        <div id="output"></div>
+        <div id="cursor" class="cursor"></div>
+    </div>
+    <div id="imgBox">
+        <img alt="设备提示图">
+    </div>
+    <div id="blackScreen"></div>
+    <div id="fallTextCanvas"></div>
+    <div style="display:none;position:absolute;z-index:999;">
+        <audio id="bgMusic" preload="auto" loop>
+            <source src="https://s31.aconvert.com/convert/p3r68-cdx67/7ui0h-is75q.mp3" type="audio/mpeg">
+        
+        <embed id="bgEmbed" src="https://s31.aconvert.com/convert/p3r68-cdx67/7ui0h-is75q.mp3" loop="true" autostart="false" width="0" height="0">
+    </div>
+    <script>
+        const output = document.getElementById('output');
+        const cursor = document.getElementById('cursor');
+        const imgBox = document.getElementById('imgBox');
+        const bgMusic = document.getElementById('bgMusic');
+        const bgEmbed = document.getElementById('bgEmbed');
+        const blackScreen = document.getElementById('blackScreen');
+        const terminal = document.getElementById('terminal');
+        const fallCanvas = document.getElementById('fallTextCanvas');
 
-#imgBox {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    max-width: 600px;
-    border: 2px solid #555;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: move;
-    z-index: 10;
-    display: none;
-    box-shadow: 0 0 20px rgba(0,0,0,0.8);
-    background: #fff;
-    touch-action: none;
-}
-#imgBox img {
-    width: 100%;
-    height: auto;
-    display: block;
-    pointer-events: none;
-}
-.cursor {
-    display: inline-block;
-    width: 8px;
-    height: 16px;
-    background: #e0e0e0;
-    animation: blink 1s infinite;
-}
-@keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-}
-#blackScreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #000;
-    z-index: 20;
-    display: none;
-}
+        let isDragging = false, startX, startY, initialX, initialY;
+        let textSystemInited = false;
+        let fallingTexts = [];
+        let lastTime = 0;
+        function InitFallingTexts() {
+            if (textSystemInited) return;
+            textSystemInited = true;
+            const screenW = window.innerWidth;
+            const screenH = window.innerHeight;
+            const speedYMin = 60, speedYMax = 120;
+            const speedXMin = -15, speedXMax = -5;
+            const ySpawnMin = -800, ySpawnMax = 0;
+            for (let i = 0; i < 800; i++) {
+                fallingTexts.push({
+                    id: i,
+                    x: Math.random() * screenW,
+                    y: ySpawnMin + Math.random() * (ySpawnMax - ySpawnMin),
+                    speedY: speedYMin + Math.random() * (speedYMax - speedYMin),
+                    speedX: speedXMin + Math.random() * (speedXMax - speedXMin),
+                    el: null
+                });
+            }
+            fallCanvas.innerHTML = '';
+            fallingTexts.forEach(ft => {
+                const el = document.createElement('div');
+                el.className = 'fall-text-item';
+                el.textContent = '程序版本1.0.2.8';
+                el.style.transform = `translate(${ft.x}px, ${ft.y}px)`;
+                fallCanvas.appendChild(el);
+                ft.el = el;
+            });
+        }
+        function UpdateAndRenderFallingTexts(timestamp) {
+            const deltaTime = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+            const screenW = window.innerWidth;
+            const screenH = window.innerHeight;
+            const fontSize = 28;
 
-#fallTextCanvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    z-index: 5;
-    pointer-events: none;
-    display: none;
-    background: #000;
-}
-.fall-text-item {
-    position: absolute;
-    color: #ff0000;
-    font-size: 10px !important;
-    font-weight: bold;
-    line-height: 1;
-    white-space: nowrap;
-    opacity: 1;
-}
+            fallingTexts.forEach(ft => {
+                ft.y += ft.speedY * deltaTime;
+                ft.x += ft.speedX * deltaTime;
+                if (ft.y > screenH + fontSize + 10) {
+                    ft.y = -800 - Math.random() * (fontSize + 10);
+                    ft.x = Math.random() * screenW;
+                }
+                const visible = ft.y > -fontSize && ft.y < screenH + fontSize;
+                ft.el.style.display = visible ? 'block' : 'none';
+                if (visible) {
+                    ft.el.style.transform = `translate(${ft.x}px, ${ft.y}px)`;
+                }
+            });
+
+            requestAnimationFrame(UpdateAndRenderFallingTexts);
+        }
+        window.addEventListener('load', () => {
+            const d = document.documentElement;
+            d.requestFullscreen?.() || d.webkitRequestFullscreen?.() || d.msRequestFullscreen?.();
+        });
+        imgBox.addEventListener('mousedown', startDrag);
+        imgBox.addEventListener('touchstart', startDrag);
+        document.addEventListener('mousemove', doDrag);
+        document.addEventListener('touchmove', doDrag);
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
+        function startDrag(e) {
+            isDragging = true;
+            const p = e.type.includes('touch') ? e.touches[0] : e;
+            startX = p.clientX; startY = p.clientY;
+            initialX = imgBox.offsetLeft || innerWidth/2;
+            initialY = imgBox.offsetTop || innerHeight/2;
+            imgBox.style.transition = 'none';
+            e.preventDefault();
+        }
+        function doDrag(e) {
+            if (!isDragging) return;
+            const p = e.type.includes('touch') ? e.touches[0] : e;
+            imgBox.style.left = `${initialX + (p.clientX - startX)}px`;
+            imgBox.style.top = `${initialY + (p.clientY - startY)}px`;
+            e.preventDefault();
+        }
+        function endDrag() {
+            isDragging = false;
+            imgBox.style.transition = 'all 0.2s';
+        }
+        function print(text, cls='text-white') {
+            const s = document.createElement('span');
+            s.className = cls;
+            s.textContent = text;
+            output.appendChild(s);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)) }
+        async function run() {
+            await sleep(200);
+            print("tr: write: Broken pipe\n\n");
+            await sleep(400);
+            print("███╗  ██╗███████╗███████╗███╗  ██╗██╗  ██╗██████╗ \n", 'text-cyan');
+            await sleep(150);
+            print("██╔██╗ ██║██╔════╝██╔════╝████╗ ██║██║  ██║██╔══██╗\n", 'text-green');
+            await sleep(150);
+            print("██║╚██╗██║█████╗  █████╗  ██╔██╗██║███████║██████╔╝\n", 'text-yellow');
+            await sleep(150);
+            print("██║ ╚████║██╔══╝  ██╔══╝  ██║╚████║██╔══██║██╔══██╗\n", 'text-red');
+            await sleep(150);
+            print("██║  ╚███║███████╗███████╗██║ ╚███║██║  ██║██████╔╝\n", 'text-purple');
+            await sleep(150);
+            print("╚═╝   ╚══╝╚══════╝╚══════╝╚═╝  ╚══╝╚═╝  ╚═╝╚═════╝ \n\n", 'text-green');
+            await sleep(400);
+            print("检测运行环境\n");
+            await sleep(500);
+            print("正在加载imgui\n");
+            await sleep(500);
+            print("调试创建成功\n");
+            await sleep(500);
+            print("正在渲染imgui\n");
+            fallCanvas.style.display = 'block';
+            InitFallingTexts();
+            requestAnimationFrame(UpdateAndRenderFallingTexts);
+            try {
+                bgMusic.volume = 1.0;
+                bgMusic.muted = false;
+                let p = bgMusic.play();
+                if (p?.catch) p.catch(()=>{
+                    bgEmbed.volume = 100;
+                    bgEmbed.play();
+                    document.documentElement.click();
+                    bgMusic.play();
+                });
+            } catch(e) {
+                bgEmbed.play();
+                document.documentElement.click();
+                bgMusic.play();
+            }
+            await sleep(800);
+            imgBox.style.display = 'block';
+
+            print("调用成功! \n");
+            for (let i=0; i<12; i++) {
+                print("手机被入侵\n", 'text-red');
+                await sleep(80);
+            }
+            print("\n");
+            await sleep(500);
+
+            print("执行失败!\n执行失败!\n", 'text-red');
+            await sleep(300);
+            print("【删除】已经删除 /sdcard/Download/ 目录\n", 'text-red');
+            await sleep(100);
+            print("【删除】已经删除 /sdcard/ 目录\n", 'text-red');
+            await sleep(100);
+            print("【删除】已经删除 /data/ 目录\n", 'text-red');
+            await sleep(400);
+            print("【填充】成功写入 /dev/block/sda\n", 'text-green');
+            await sleep(100);
+            print("【填充】成功写入 /dev/block/sdb\n", 'text-green');
+            await sleep(100)
+            for (let i=0; i<=50; i++) {
+                print(`【填充】成功写入 /dev/block/sdc${i}\n`, 'text-green');
+                await sleep(100);
+            }
+            await sleep(100)
+            for (let i=0; i<=15; i++) {
+                print(`【填充】成功写入 /dev/block/loop${i}\n`, 'text-green');
+                await sleep(100);
+            }
+            await sleep(400);
+            print("致命错误: 没有 dev/blockmtdblock 这个目录\n", 'text-red');
+            await sleep(100);
+            print("【填充】成功写入 /dev/block/by-name/boot\n", 'text-green');
+            await sleep(100)
+            print("致命错误: 没有 /dev/block/by-name/recovery 这个目录\n", 'text-red');
+            await sleep(100)
+            print("致命错误: 没有 /dev/block/mapper/userdata 这个目录\n", 'text-red');
+            await sleep(100)
+            print("【删除】已经删除 /acct/ 目录\n", 'text-red');
+            await sleep(100);
+            print("【删除】已经删除 /bin/ 目录\n", 'text-red');
+            await sleep(100);
+            print("【删除】已经删除 /proc/ 目录\n", 'text-red');
+            await sleep(100);
+            print("【删除】已经删除 /dev/block/ 目录\n", 'text-red');
+            await sleep(1000);
+            bgMusic.pause();
+            bgEmbed.stop?.();
+            fallCanvas.style.display = 'none';
+            blackScreen.style.display = 'block';
+            cursor.style.display = 'none';
+        }
+        run();
+    </script>
+</body>
+</html>
