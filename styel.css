@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'JetBrains Mono', monospace;
+    user-select: none;
+}
+body {
+    background: #000;
+    overflow: hidden;
+    position: relative;
+}
+#terminal {
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    color: #e0e0e0;
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 20px;
+    overflow-y: auto;
+    position: relative;
+    white-space: pre;
+    z-index: 3;
+}
+.text-cyan { color: #00ffff; }
+.text-green { color: #00ff00; }
+.text-yellow { color: #ffff00; }
+.text-red { color: #ff0000; }
+.text-purple { color: #ff00ff; }
+.text-white { color: #ffffff; }
+
+#imgBox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 600px;
+    border: 2px solid #555;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: move;
+    z-index: 10;
+    display: none;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    background: #fff;
+    touch-action: none;
+}
+#imgBox img {
+    width: 100%;
+    height: auto;
+    display: block;
+    pointer-events: none;
+    content: url('https://cdn-us.imgs.moe/2026/05/24/f05d77f77317ec038eed7029cd1ccf29.png');
+}
+.cursor {
+    display: inline-block;
+    width: 8px;
+    height: 16px;
+    background: #e0e0e0;
+    animation: blink 1s infinite;
+}
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+#blackScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 20;
+    display: none;
+}
+
+#fallTextCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 5;
+    pointer-events: none;
+    display: none;
+    background: #000;
+}
+.fall-text-item {
+    position: absolute;
+    color: #ff0000;
+    font-size: 10px !important;
+    font-weight: bold;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 1;
+}
