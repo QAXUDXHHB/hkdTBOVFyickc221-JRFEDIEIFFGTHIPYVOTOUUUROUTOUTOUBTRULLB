@@ -53,7 +53,6 @@ body {
     height: auto;
     display: block;
     pointer-events: none;
-    content: url('https://cdn-us.imgs.moe/2026/05/24/f05d77f77317ec038eed7029cd1ccf29.png');
 }
 .cursor {
     display: inline-block;
