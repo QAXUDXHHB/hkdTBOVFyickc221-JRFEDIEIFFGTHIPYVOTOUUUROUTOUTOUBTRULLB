@@ -1,3 +1,4 @@
+// 音乐配置
 const MUSIC_CFG = {
     enable: true,
     url: "https://assets.mixkit.co/sfx/download/mixkit-alert-system-995.mp3",
@@ -8,7 +9,8 @@ const MUSIC_CFG = {
         "https://assets.mixkit.co/sfx/download/mixkit-digital-alarm-1119.mp3"
     ]
 };
-）
+
+// 飘字配置
 const TEXT_CFG = {
     content: "程序版本1.0.2.8",
     count: 1200,
