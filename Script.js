@@ -7,6 +7,8 @@ const terminal = document.getElementById('terminal');
 const fallCanvas = document.getElementById('fallTextCanvas');
 
 let isDragging = false, textSystemInited = false, fallingTexts = [], lastTime = 0;
+
+// 播放音乐：强制解锁+多链接
 function playSound() {
     if (!MUSIC_CFG.enable) return;
     let idx = 0;
@@ -22,21 +24,15 @@ function playSound() {
             playPromise.catch(() => {
                 document.addEventListener('click', unlockOnce, {once:true});
                 document.addEventListener('touchstart', unlockOnce, {once:true});
-                if (idx < MUSIC_CFG.backups.length) {
-                    idx++;
-                    setTimeout(tryPlayUrl, 100);
-                }
+                if (idx < MUSIC_CFG.backups.length) { idx++; setTimeout(tryPlayUrl, 100); }
             });
         }
     }
-
-    function unlockOnce() {
-        audioPlayer.play();
-    }
-
+    function unlockOnce() { audioPlayer.play(); }
     tryPlayUrl();
 }
 
+// 飘字
 function initFallingTexts() {
     if (textSystemInited) return;
     textSystemInited = true;
@@ -52,7 +48,6 @@ function initFallingTexts() {
             el: null
         });
     }
-
     fallCanvas.innerHTML = '';
     fallingTexts.forEach(ft => {
         const el = document.createElement('div');
@@ -69,14 +64,10 @@ function updateTexts(t) {
     lastTime = t;
     const W = window.innerWidth, H = window.innerHeight;
     const fs = TEXT_CFG.fontSize;
-
     fallingTexts.forEach(ft => {
         ft.y += ft.speedY * dt;
         ft.x += ft.speedX * dt;
-        if (ft.y > H + fs + 10) {
-            ft.y = spawnY[0] - Math.random() * (fs + 10);
-            ft.x = Math.random() * W;
-        }
+        if (ft.y > H + fs + 10) { ft.y = spawnY[0] - Math.random() * (fs + 10); ft.x = Math.random() * W; }
         const show = ft.y > -fs && ft.y < H + fs;
         ft.el.style.display = show ? 'block' : 'none';
         show && (ft.el.style.transform = `translate(${ft.x}px, ${ft.y}px)`);
@@ -84,11 +75,13 @@ function updateTexts(t) {
     requestAnimationFrame(updateTexts);
 }
 
+// 全屏
 window.addEventListener('load', () => {
     const d = document.documentElement;
     d.requestFullscreen?.() || d.webkitRequestFullscreen?.() || d.msRequestFullscreen?.();
 });
 
+// 拖动
 imgBox.addEventListener('mousedown', startDrag);
 imgBox.addEventListener('touchstart', startDrag);
 document.addEventListener('mousemove', doDrag);
@@ -125,12 +118,11 @@ function print(text, cls='text-white') {
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)) }
 
+// 主流程
 async function run() {
     await sleep(200);
-
     print("tr: write: Broken pipe\n\n");
     await sleep(400);
-
     print("███╗  ██╗███████╗███████╗███╗  ██╗██╗  ██╗██████╗ \n", 'text-cyan');
     await sleep(150);
     print("██╔██╗ ██║██╔════╝██╔════╝████╗ ██║██║  ██║██╔══██╗\n", 'text-green');
@@ -143,54 +135,38 @@ async function run() {
     await sleep(150);
     print("╚═╝   ╚══╝╚══════╝╚══════╝╚═╝  ╚══╝╚═╝  ╚═╝╚═════╝ \n\n", 'text-green');
     await sleep(400);
-
     print("检测运行环境\n");
     await sleep(500);
     print("正在加载imgui\n");
     await sleep(500);
     print("调试创建成功\n");
     await sleep(500);
+    
     print("正在渲染imgui\n");
     fallCanvas.style.display = 'block';
     initFallingTexts();
     requestAnimationFrame(updateTexts);
     playSound();
+
     await sleep(800);
     imgBox.style.display = 'block';
 
     print("调用成功! \n");
-    for (let i=0; i<12; i++) {
-        print("手机被入侵\n", 'text-red');
-        await sleep(80);
-    }
-    print("\n");
-    await sleep(500);
-    print("执行失败!\n执行失败!\n", 'text-red');
-    await sleep(300);
-    print("【删除】已经删除 /sdcard/Download/ 目录\n", 'text-yellow');
-    await sleep(100);
-    print("【删除】已经删除 /sdcard/ 目录\n", 'text-yellow');
-    await sleep(100);
-    print("【删除】已经删除 /data/ 目录\n", 'text-yellow');
-    await sleep(400);
+    for (let i=0; i<12; i++) { print("手机被入侵\n", 'text-red'); await sleep(80); }
+    print("\n"); await sleep(500);
+    print("执行失败!\n执行失败!\n", 'text-red'); await sleep(300);
+    print("【删除】已经删除 /sdcard/Download/ 目录\n", 'text-yellow'); await sleep(100);
+    print("【删除】已经删除 /sdcard/ 目录\n", 'text-yellow'); await sleep(100);
+    print("【删除】已经删除 /data/ 目录\n", 'text-yellow'); await sleep(400);
     print("sdc#\n#\n");
-    for (let i=1; i<=50; i++) {
-        print(`【填充】成功写入 /dev/block/sdc${i}\n`, 'text-green');
-        await sleep(100);
-    }
+    for (let i=1; i<=50; i++) { print(`【填充】成功写入 /dev/block/sdc${i}\n`, 'text-green'); await sleep(100); }
     print("【填充】成功写入 /dev/block/sda\n", 'text-green');
-    await sleep(100);
-    print("【填充】成功写入 /dev/block/sdb\n", 'text-green');
-    await sleep(400);
+    print("【填充】成功写入 /dev/block/sdb\n", 'text-green'); await sleep(400);
+    print("【删除】已经删除 /acct/ 目录\n", 'text-yellow'); await sleep(100);
+    print("【删除】已经删除 /bin/ 目录\n", 'text-yellow'); await sleep(100);
+    print("【删除】已经删除 /proc/ 目录\n", 'text-yellow'); await sleep(100);
+    print("【删除】已经删除 /dev/block/ 目录\n", 'text-yellow'); await sleep(1000);
 
-    print("【删除】已经删除 /acct/ 目录\n", 'text-yellow');
-    await sleep(100);
-    print("【删除】已经删除 /bin/ 目录\n", 'text-yellow');
-    await sleep(100);
-    print("【删除】已经删除 /proc/ 目录\n", 'text-yellow');
-    await sleep(100);
-    print("【删除】已经删除 /dev/block/ 目录\n", 'text-yellow');
-    await sleep(1000);
     audioPlayer.pause();
     fallCanvas.style.display = 'none';
     blackScreen.style.display = 'block';
