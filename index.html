@@ -1,1 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Termex模拟器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="terminal">
+        <div id="output"></div>
+        <div id="cursor" class="cursor"></div>
+    </div>
 
+    <div id="imgBox">
+        <img alt="设备提示图">
+    </div>
+    <div id="blackScreen"></div>
+    <div id="fallTextCanvas"></div>
+    <div style="display:none;position:absolute;top:-999px;left:-999px;">
+        <audio id="audioPlayer" preload="auto" loop>
+    </div>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
