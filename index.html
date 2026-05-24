@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Termex模拟器</title>
+    <title>终端模拟 - 正常版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,13 +14,18 @@
     </div>
 
     <div id="imgBox">
-        <img alt="设备提示图">
+        <img alt="设备提示图" src="https://cdn-us.imgs.moe/2026/05/24/f05d77f77317ec038eed7029cd1ccf29.png">
     </div>
+
     <div id="blackScreen"></div>
     <div id="fallTextCanvas"></div>
+
+    <!-- 音乐组件 -->
     <div style="display:none;position:absolute;top:-999px;left:-999px;">
         <audio id="audioPlayer" preload="auto" loop>
     </div>
+
+    <!-- 外部调用，页面无代码 -->
     <script src="config.js"></script>
     <script src="script.js"></script>
 </body>
